@@ -309,7 +309,7 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
             className="w-full py-3 sm:py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all min-h-[44px]"
           >
             <CheckCircle className="w-4 h-4" />
-            <span>Confirmar Nivel de Aceite</span>
+            <span>Confirmar Nivel y Volver al Banco</span>
           </button>
         </div>
       </div>

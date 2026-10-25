@@ -303,7 +303,7 @@ export const CoolantModal: React.FC<CoolantModalProps> = ({
             className="w-full min-h-[48px] py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
           >
             <CheckCircle className="w-4 h-4 shrink-0" />
-            <span>Confirmar Nivel de Refrigerante ({liters.toFixed(1)} L)</span>
+            <span>Confirmar Refrigerante ({liters.toFixed(1)} L) y Volver al Banco</span>
           </button>
         </div>
       </div>

@@ -325,7 +325,7 @@ export const TimingCalibrationModal: React.FC<TimingCalibrationModalProps> = ({
             }`}
           >
             <CheckCircle2 className="w-5 h-5" />
-            {isPerfect ? 'Guardar Calado y Sincronismo de Levas (0° PMS)' : 'Fijar Distribución Fuera de Punto (Riesgo de Rotura)'}
+            {isPerfect ? 'Guardar Calado (0° PMS) y Volver al Banco' : 'Fijar Distribución y Volver al Banco'}
           </button>
         </div>
       </div>

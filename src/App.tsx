@@ -601,6 +601,31 @@ export default function App() {
     showToast('Motor desmontado y banco de piezas barajado aleatoriamente. Configura tu partida para ingresar.', 'info');
   };
 
+  // Automatically return the player to the workbench after confirming calibrations or fluids
+  const handleReturnToWorkbench = (hintMessage?: string) => {
+    setActiveModal(null);
+
+    // If all parts are mounted, suggest checking Dyno
+    if (installedPartIds.length >= ENGINE_PARTS.length) {
+      setMobileTab('both');
+      showToast('¡Motor 100% montado y calibrado! Pasa al Banco Dyno para probar el encendido.', 'success');
+      return;
+    }
+
+    // Switch mobile view back to workbench so the player never gets lost
+    setMobileTab('workbench');
+    setTimeout(() => {
+      const benchEl = document.getElementById('workshop-parts-bench');
+      if (benchEl) {
+        benchEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 120);
+
+    if (hintMessage) {
+      showToast(hintMessage, 'info');
+    }
+  };
+
   // Open specific modals
   const handleOpenTorqueModal = (part: EnginePart) => {
     ensureTimerStarted();
@@ -986,7 +1011,10 @@ export default function App() {
             </div>
 
             {/* 1. Banco de Trabajo (Piezas aleatorias, herramientas y mesa de ensamble) */}
-            <div className={mobileTab === 'engine' ? 'hidden lg:block' : 'block'}>
+            <div
+              id="workshop-parts-bench"
+              className={`scroll-mt-20 ${mobileTab === 'engine' ? 'hidden lg:block' : 'block'}`}
+            >
               <PartsTray
                 parts={ENGINE_PARTS}
                 installedPartIds={installedPartIds}
@@ -1209,7 +1237,7 @@ export default function App() {
           part={modalPart}
           currentTorque={partTorques[modalPart.id] || 0}
           onApplyTorque={handleApplyTorque}
-          onClose={() => setActiveModal(null)}
+          onClose={() => handleReturnToWorkbench('¡Apriete confirmado! Selecciona la siguiente pieza en el banco.')}
         />
       )}
 
@@ -1217,7 +1245,7 @@ export default function App() {
         <TimingCalibrationModal
           currentOffsetTeeth={timingOffsetTeeth}
           onSaveTiming={handleSaveTiming}
-          onClose={() => setActiveModal(null)}
+          onClose={() => handleReturnToWorkbench('¡Distribución calada! Selecciona la siguiente pieza en el banco.')}
         />
       )}
 
@@ -1225,7 +1253,7 @@ export default function App() {
         <OilDipstickModal
           currentOilLevel={oilLevel}
           onSaveOilLevel={handleSaveOilLevel}
-          onClose={() => setActiveModal(null)}
+          onClose={() => handleReturnToWorkbench('¡Nivel de aceite registrado! Selecciona la siguiente pieza en el banco.')}
         />
       )}
 
@@ -1233,7 +1261,7 @@ export default function App() {
         <CoolantModal
           currentCoolantLiters={coolantLiters}
           onSaveCoolantLevel={handleSaveCoolantLevel}
-          onClose={() => setActiveModal(null)}
+          onClose={() => handleReturnToWorkbench('¡Circuito de refrigeración registrado! Selecciona la siguiente pieza.')}
         />
       )}
 

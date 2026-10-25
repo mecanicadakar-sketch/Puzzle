@@ -386,7 +386,7 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
                   }`}
                 >
                   <CheckCircle className="w-4 h-4" />
-                  <span>{isSuccess ? 'Confirmar Apriete y Cerrar' : 'Aceptar este Par'}</span>
+                  <span>{isSuccess ? 'Confirmar Apriete y Volver al Banco' : 'Aceptar este Par y Volver al Banco'}</span>
                 </button>
               )}
 
