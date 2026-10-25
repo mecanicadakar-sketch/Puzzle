@@ -46,7 +46,13 @@ const DEFAULT_RECORDS: LeaderboardEntry[] = [
 export function getStoredPlayerName(): string {
   if (typeof window === 'undefined') return '';
   const name = localStorage.getItem(PLAYER_NAME_KEY);
-  if (!name || !name.trim() || name === 'Mecánico Dakar' || name === 'Mecánica Dakar') {
+  if (
+    !name ||
+    !name.trim() ||
+    name === 'Mecánico Dakar' ||
+    name === 'Mecánica Dakar' ||
+    name === 'Jefe de Taller'
+  ) {
     return '';
   }
   return name.trim();

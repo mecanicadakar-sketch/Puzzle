@@ -409,14 +409,14 @@ export default function App() {
         setActiveModal('torque');
       }, 350);
     } else if (part.id === 'oil_fluid') {
-      setOilLevel(80); // Default good level on mount
-      showToast('Aceite sintético 5W-40 vertido (4.5 L). Comprobando nivel en la varilla...', 'info');
+      setOilLevel(15); // Inicia en nivel bajo (0.8 L) para que el cursor no coincida de primera y el usuario deba subirlo
+      showToast('¡Bidón de aceite SAE 5W-40 listo! Mueve el cursor para subir el nivel al cárter hasta 4.5 L.', 'info');
       setTimeout(() => {
         setActiveModal('oil');
       }, 350);
     } else if (part.id === 'coolant_fluid') {
-      setCoolantLiters(5.0); // Default 5.0 Liters filled on mount
-      showToast('Refrigerante OAT vertido (5.0 L). Calibrando nivel en el vaso de expansión...', 'info');
+      setCoolantLiters(1.0); // Inicia en nivel bajo (1.0 L) para que el cursor no coincida de primera y el usuario deba subirlo
+      showToast('¡Bidón de refrigerante OAT listo! Mueve el cursor para subir el nivel en el vaso hasta 5.0 L.', 'info');
       setTimeout(() => {
         setActiveModal('coolant');
       }, 350);

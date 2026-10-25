@@ -12,7 +12,17 @@ export const ParticipantNameModal: React.FC<ParticipantNameModalProps> = ({
   onSave,
   onClose,
 }) => {
-  const [name, setName] = useState<string>(currentName);
+  const [name, setName] = useState<string>(() => {
+    if (
+      currentName &&
+      currentName !== 'Mecánico Dakar' &&
+      currentName !== 'Mecánica Dakar' &&
+      currentName !== 'Jefe de Taller'
+    ) {
+      return currentName;
+    }
+    return '';
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,14 +31,6 @@ export const ParticipantNameModal: React.FC<ParticipantNameModalProps> = ({
       onClose();
     }
   };
-
-  const suggestions = [
-    'Jefe de Taller',
-    'Carlos Sainz Jr',
-    'Jefe de Motores F1',
-    'Técnico WRC',
-    'Preparador Turbo',
-  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -60,29 +62,11 @@ export const ParticipantNameModal: React.FC<ParticipantNameModalProps> = ({
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ej: Cristian Dakar..."
+              placeholder="Ingrese su Nombre Aquí"
               maxLength={28}
               autoFocus
-              className="w-full px-3.5 py-2.5 min-h-[44px] bg-[#0b0f17] border border-gray-700 rounded-xl text-white font-racing tracking-wide focus:outline-none focus:border-amber-500 text-sm"
+              className="w-full px-3.5 py-2.5 min-h-[44px] bg-[#0b0f17] border border-gray-700 rounded-xl text-white font-racing tracking-wide focus:outline-none focus:border-amber-500 text-sm placeholder:text-gray-500 placeholder:italic"
             />
-          </div>
-
-          <div>
-            <span className="text-[11px] font-mono-tech text-gray-400 block mb-1.5">
-              Sugerencias rápidas:
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {suggestions.map((sug) => (
-                <button
-                  type="button"
-                  key={sug}
-                  onClick={() => setName(sug)}
-                  className="px-3 py-1.5 min-h-[36px] rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-racing text-gray-300 hover:text-white cursor-pointer transition-colors"
-                >
-                  {sug}
-                </button>
-              ))}
-            </div>
           </div>
 
           <div className="flex items-center gap-2 pt-2">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { soundEngine } from '../services/soundEngine';
-import { Droplet, CheckCircle, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Droplet, CheckCircle, RotateCcw, AlertTriangle, Sliders, Minus, Plus } from 'lucide-react';
 
 interface OilDipstickModalProps {
   currentOilLevel: number; // 0 to 100
@@ -13,9 +13,21 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
   onSaveOilLevel,
   onClose,
 }) => {
-  const [oilLevel, setOilLevel] = useState<number>(currentOilLevel);
+  // El cursor de llenado no debe coincidir de primera con el nivel deseado (80% / 4.5L)
+  const [oilLevel, setOilLevel] = useState<number>(() => {
+    if (!currentOilLevel || currentOilLevel === 0 || currentOilLevel === 80) {
+      return 15; // Nivel bajo inicial (0.8 L) para que el mecánico deba usar el cursor
+    }
+    return currentOilLevel;
+  });
   const [isPouring, setIsPouring] = useState<boolean>(false);
   const [isDipstickPulled, setIsDipstickPulled] = useState<boolean>(true);
+
+  const handleSliderChange = (newLevel: number) => {
+    const clamped = Math.max(0, Math.min(100, Math.round(newLevel)));
+    setOilLevel(clamped);
+    soundEngine.playToolSound('oil_pour');
+  };
 
   const handlePourOil = () => {
     setIsPouring(true);
@@ -82,7 +94,7 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {/* Visual Oil Level in Engine */}
             <div className="bg-[#0d1117] border border-[#30363d] rounded-2xl p-3.5 sm:p-4 flex flex-col items-center justify-between">
@@ -92,7 +104,7 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
               <div className="w-24 h-36 sm:h-40 bg-[#1e293b] rounded-b-2xl border-2 border-gray-600 relative overflow-hidden flex flex-col justify-end p-1 my-2">
                 {/* Oil liquid */}
                 <div
-                  className="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-b-xl transition-all duration-500 relative"
+                  className="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-b-xl transition-all duration-300 relative"
                   style={{ height: `${oilLevel}%` }}
                 >
                   {isPouring && (
@@ -101,7 +113,7 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
                 </div>
                 {/* Capacity ticks */}
                 <div className="absolute right-1 top-2 text-[8px] font-mono-tech text-gray-500">MAX (4.8L)</div>
-                <div className="absolute right-1 top-8 text-[8px] font-mono-tech text-emerald-400">IDEAL (4.5L)</div>
+                <div className="absolute right-1 top-8 text-[8px] font-mono-tech text-emerald-400 font-bold">IDEAL (4.5L)</div>
                 <div className="absolute right-1 bottom-3 text-[8px] font-mono-tech text-red-400">MIN (2.0L)</div>
               </div>
 
@@ -132,7 +144,7 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
                     <div className="w-3 h-32 sm:h-36 bg-gradient-to-b from-gray-400 via-gray-300 to-amber-200 rounded-sm relative border border-gray-500 flex flex-col justify-end">
                       {/* Oil wet mark */}
                       <div
-                        className="w-full bg-amber-500/90 rounded-sm border-t border-amber-300 shadow-[0_0_8px_#f59e0b]"
+                        className="w-full bg-amber-500/90 rounded-sm border-t border-amber-300 shadow-[0_0_8px_#f59e0b] transition-all duration-300"
                         style={{ height: `${Math.min(100, (oilLevel / 85) * 60)}%` }}
                       />
                       {/* Hatch marks for MIN and MAX */}
@@ -141,7 +153,7 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
                     </div>
                     <div className="flex flex-col justify-between h-32 sm:h-36 text-[9px] font-mono-tech text-gray-400">
                       <span className="text-red-400">MAX</span>
-                      <span className="text-emerald-400">ZONA ÓPTIMA</span>
+                      <span className="text-emerald-400 font-bold">ZONA ÓPTIMA</span>
                       <span className="text-red-400">MIN</span>
                     </div>
                   </div>
@@ -180,6 +192,64 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
             </div>
           </div>
 
+          {/* Cursor Slider to Raise / Lower Oil Level */}
+          <div className="bg-[#0d1117] border border-[#30363d] rounded-2xl p-3.5 sm:p-4 space-y-2.5">
+            <div className="flex justify-between items-center text-xs">
+              <span className="font-medium text-gray-300 flex items-center gap-1.5">
+                <Sliders className="w-4 h-4 text-amber-400" />
+                Cursor de Nivel Deseado (Subir / Bajar)
+              </span>
+              <span className="font-mono-tech text-amber-400 font-bold text-sm bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
+                {currentLiters} L ({oilLevel}%)
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleSliderChange(oilLevel - 5)}
+                disabled={oilLevel <= 0}
+                className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+                title="Bajar nivel (-5%)"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={oilLevel}
+                onChange={(e) => handleSliderChange(Number(e.target.value))}
+                className="w-full accent-amber-500 h-3 bg-gray-700 rounded-lg cursor-pointer"
+                title="Mover cursor para subir o bajar el nivel de aceite deseado"
+              />
+
+              <button
+                type="button"
+                onClick={() => handleSliderChange(oilLevel + 5)}
+                disabled={oilLevel >= 100}
+                className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+                title="Subir nivel (+5%)"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="flex justify-between items-center text-[10px] text-gray-500 font-mono-tech pt-0.5">
+              <span>0.0 L (Vacío)</span>
+              <button
+                type="button"
+                onClick={() => handleSliderChange(80)}
+                className="text-amber-400 hover:text-amber-300 underline cursor-pointer font-bold px-1.5 py-0.5 rounded hover:bg-amber-500/10 transition-colors"
+              >
+                Fijar en 4.5 L (Nivel Óptimo)
+              </button>
+              <span>4.8 L (Máx)</span>
+            </div>
+          </div>
+
           {/* Controls: Pour & Drain */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
@@ -195,7 +265,7 @@ export const OilDipstickModal: React.FC<OilDipstickModalProps> = ({
               onClick={handleDrainOil}
               disabled={oilLevel === 0}
               className="py-3 px-3 sm:px-4 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer border border-gray-700 min-h-[44px]"
-              title="Drenar cárter"
+              title="Drenar cárter a 0 L"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Vaciar</span>

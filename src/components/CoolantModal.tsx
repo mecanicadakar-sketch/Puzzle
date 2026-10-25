@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { soundEngine } from '../services/soundEngine';
-import { Droplet, CheckCircle, RotateCcw, AlertTriangle, ShieldCheck, Thermometer } from 'lucide-react';
+import { Droplet, CheckCircle, RotateCcw, AlertTriangle, Thermometer, Sliders, Minus, Plus } from 'lucide-react';
 
 interface CoolantModalProps {
   currentCoolantLiters: number; // 0 to 5.0
@@ -13,10 +13,22 @@ export const CoolantModal: React.FC<CoolantModalProps> = ({
   onSaveCoolantLevel,
   onClose,
 }) => {
-  const [liters, setLiters] = useState<number>(currentCoolantLiters);
+  // El cursor de llenado no debe coincidir de primera con el nivel deseado (5.0 L)
+  const [liters, setLiters] = useState<number>(() => {
+    if (!currentCoolantLiters || currentCoolantLiters === 0 || currentCoolantLiters === 5.0) {
+      return 1.0; // Nivel bajo inicial (1.0 L / circuito vacío) para que el mecánico deba usar el cursor
+    }
+    return currentCoolantLiters;
+  });
   const [isPouring, setIsPouring] = useState<boolean>(false);
   const [capOpen, setCapOpen] = useState<boolean>(true);
   const [isPurged, setIsPurged] = useState<boolean>(false);
+
+  const handleSliderChange = (newVal: number) => {
+    const clamped = Math.max(0, Math.min(5.0, Number(newVal.toFixed(1))));
+    setLiters(clamped);
+    soundEngine.playToolSound('oil_pour');
+  };
 
   const handlePour = () => {
     if (!capOpen) {
@@ -108,7 +120,7 @@ export const CoolantModal: React.FC<CoolantModalProps> = ({
 
                 {/* Coolant Liquid */}
                 <div
-                  className="w-full bg-gradient-to-t from-emerald-600 via-emerald-500 to-teal-400 rounded-xl transition-all duration-500 relative"
+                  className="w-full bg-gradient-to-t from-emerald-600 via-emerald-500 to-teal-400 rounded-xl transition-all duration-300 relative"
                   style={{ height: `${(liters / 5.0) * 82}%` }}
                 >
                   {isPouring && (
@@ -182,6 +194,64 @@ export const CoolantModal: React.FC<CoolantModalProps> = ({
             </div>
           </div>
 
+          {/* Cursor Slider to Raise / Lower Coolant Level */}
+          <div className="bg-[#0d1117] border border-[#30363d] rounded-2xl p-3.5 sm:p-4 space-y-2.5">
+            <div className="flex justify-between items-center text-xs">
+              <span className="font-medium text-gray-300 flex items-center gap-1.5">
+                <Sliders className="w-4 h-4 text-emerald-400" />
+                Cursor de Nivel Deseado (Subir / Bajar)
+              </span>
+              <span className="font-mono-tech text-emerald-400 font-bold text-sm bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                {liters.toFixed(1)} L / 5.0 L
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleSliderChange(liters - 0.2)}
+                disabled={liters <= 0}
+                className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+                title="Bajar nivel (-0.2 L)"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+
+              <input
+                type="range"
+                min={0}
+                max={5.0}
+                step={0.1}
+                value={liters}
+                onChange={(e) => handleSliderChange(Number(e.target.value))}
+                className="w-full accent-emerald-500 h-3 bg-gray-700 rounded-lg cursor-pointer"
+                title="Mover cursor para subir o bajar el nivel de refrigerante deseado"
+              />
+
+              <button
+                type="button"
+                onClick={() => handleSliderChange(liters + 0.2)}
+                disabled={liters >= 5.0}
+                className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+                title="Subir nivel (+0.2 L)"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="flex justify-between items-center text-[10px] text-gray-500 font-mono-tech pt-0.5">
+              <span>0.0 L (Circuito Seco)</span>
+              <button
+                type="button"
+                onClick={() => handleSliderChange(5.0)}
+                className="text-emerald-400 hover:text-emerald-300 underline cursor-pointer font-bold px-1.5 py-0.5 rounded hover:bg-emerald-500/10 transition-colors"
+              >
+                Fijar en 5.0 L (Nivel Ideal)
+              </button>
+              <span>5.0 L (Capacidad Máx)</span>
+            </div>
+          </div>
+
           {/* Controls: Pour & Drain */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
             <button
@@ -190,17 +260,17 @@ export const CoolantModal: React.FC<CoolantModalProps> = ({
               className="flex-1 min-h-[46px] py-3 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
             >
               <Droplet className="w-4 h-4 shrink-0" />
-              {isPouring ? 'Llenando Circuito...' : 'Verter Refrigerante OAT (hasta 5.0 L)'}
+              <span>{isPouring ? 'Llenando Circuito...' : 'Verter Refrigerante OAT (hasta 5.0 L)'}</span>
             </button>
 
             <button
               onClick={handleDrain}
               disabled={liters === 0}
               className="min-h-[44px] py-2.5 sm:py-3 px-4 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer border border-gray-700 active:scale-98"
-              title="Drenar circuito de refrigeración"
+              title="Drenar circuito a 0 L"
             >
               <RotateCcw className="w-3.5 h-3.5 shrink-0" />
-              Vaciar
+              <span>Vaciar</span>
             </button>
           </div>
 
@@ -233,7 +303,7 @@ export const CoolantModal: React.FC<CoolantModalProps> = ({
             className="w-full min-h-[48px] py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
           >
             <CheckCircle className="w-4 h-4 shrink-0" />
-            Confirmar Nivel de Refrigerante (5.0 L)
+            <span>Confirmar Nivel de Refrigerante ({liters.toFixed(1)} L)</span>
           </button>
         </div>
       </div>

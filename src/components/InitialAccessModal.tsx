@@ -12,7 +12,6 @@ import {
   AlertTriangle,
   Play,
   Eye,
-  Lock,
 } from 'lucide-react';
 
 interface InitialAccessModalProps {
@@ -33,7 +32,12 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
   visitCountFormatted,
 }) => {
   const [name, setName] = useState<string>(() => {
-    if (currentName && currentName !== 'Mecánico Dakar' && currentName !== 'Mecánica Dakar') {
+    if (
+      currentName &&
+      currentName !== 'Mecánico Dakar' &&
+      currentName !== 'Mecánica Dakar' &&
+      currentName !== 'Jefe de Taller'
+    ) {
       return currentName;
     }
     return '';
@@ -43,7 +47,12 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
   const [imageError, setImageError] = useState<boolean>(false);
 
   React.useEffect(() => {
-    if (currentName && currentName !== 'Mecánico Dakar' && currentName !== 'Mecánica Dakar') {
+    if (
+      currentName &&
+      currentName !== 'Mecánico Dakar' &&
+      currentName !== 'Mecánica Dakar' &&
+      currentName !== 'Jefe de Taller'
+    ) {
       setName(currentName);
     }
   }, [currentName]);
@@ -61,18 +70,12 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
     }
   };
 
-  const handleSelectPreset = (preset: string) => {
-    setName(preset);
-    setNameError('');
-    soundEngine.playToolSound('key_click');
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanName = name.trim();
 
     if (!cleanName) {
-      setNameError('⚠️ Es obligatorio ingresar tu nombre o apodo para ingresar al juego.');
+      setNameError('⚠️ Escribe tu nombre o apodo para ingresar al taller.');
       soundEngine.playToolSound('wrench');
       return;
     }
@@ -90,14 +93,6 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
     }, 150);
     onConfirm(cleanName, difficulty);
   };
-
-  const namePresets = [
-    'Jefe de Taller',
-    'Jefe de Motores F1',
-    'Técnico Oficial WRC',
-    'Preparador Turbo',
-    'Carlos Sainz Jr',
-  ];
 
   const difficultyOptions: {
     id: AssemblyDifficulty;
@@ -199,9 +194,9 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
               )}
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] sm:text-xs font-mono-tech px-2 py-0.5 rounded bg-amber-500/25 text-amber-300 border border-amber-500/50 uppercase font-bold tracking-wider flex items-center gap-1">
-                    <Lock className="w-3 h-3 text-amber-400" />
-                    Ingreso Obligatorio
+                  <span className="text-[10px] sm:text-xs font-mono-tech px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase font-bold tracking-wider flex items-center gap-1">
+                    <Wrench className="w-3 h-3 text-amber-400" />
+                    Ficha de Ingreso
                   </span>
                   {visitCountFormatted && (
                     <span className="text-[10px] sm:text-xs font-mono-tech px-2 py-0.5 rounded bg-[#090d14] text-amber-300 border border-amber-500/30 flex items-center gap-1 font-bold">
@@ -226,12 +221,12 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
 
         {/* Modal Body Form */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-          {/* Step 1: Participant Name (Mandatory) */}
+          {/* Step 1: Participant Name */}
           <div className="space-y-2.5">
             <label className="flex items-center justify-between text-sm sm:text-base font-racing font-bold uppercase tracking-wider text-gray-200">
               <span className="flex items-center gap-2">
                 <User className="w-4 h-4 text-amber-400" />
-                1. Nombre del Piloto / Mecánico: <span className="text-red-400 font-bold">* Obligatorio</span>
+                1. Nombre del Piloto / Mecánico:
               </span>
               <span className="text-xs font-mono-tech text-gray-400 lowercase font-normal">
                 (para ranking y tiempos)
@@ -243,10 +238,10 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
                 type="text"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="Escribe tu nombre o apodo (ej: Carlos Sainz, Juan Mecánico)..."
+                placeholder="Ingrese su Nombre Aquí"
                 maxLength={26}
                 autoFocus
-                className={`w-full px-4 py-3 bg-[#090d14] border rounded-xl text-white font-racing tracking-wide text-sm sm:text-base focus:outline-none shadow-inner transition-colors ${
+                className={`w-full px-4 py-3 bg-[#090d14] border rounded-xl text-white font-racing tracking-wide text-sm sm:text-base focus:outline-none shadow-inner placeholder:text-gray-500 placeholder:italic transition-colors ${
                   nameError
                     ? 'border-red-500 ring-2 ring-red-500/20'
                     : name.trim().length >= 2
@@ -265,35 +260,14 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
                 <span>{nameError}</span>
               </p>
             )}
-
-            {/* Quick Nickname Presets */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-wide mr-1 font-semibold">
-                O elige un apodo rápido:
-              </span>
-              {namePresets.map((preset) => (
-                <button
-                  type="button"
-                  key={preset}
-                  onClick={() => handleSelectPreset(preset)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-racing transition-all cursor-pointer border ${
-                    name === preset
-                      ? 'bg-amber-500/25 text-amber-300 border-amber-500/60 font-bold'
-                      : 'bg-gray-800/80 hover:bg-gray-700 text-gray-200 border-gray-700'
-                  }`}
-                >
-                  {preset}
-                </button>
-              ))}
-            </div>
           </div>
 
-          {/* Step 2: Difficulty Selection (Mandatory) */}
+          {/* Step 2: Difficulty Selection */}
           <div className="space-y-3">
             <label className="flex items-center justify-between text-sm sm:text-base font-racing font-bold uppercase tracking-wider text-gray-200">
               <span className="flex items-center gap-2">
                 <Gauge className="w-4 h-4 text-cyan-400" />
-                2. Nivel de Dificultad: <span className="text-red-400 font-bold">* Obligatorio</span>
+                2. Nivel de Dificultad:
               </span>
               <span className="text-xs font-mono-tech text-cyan-400 hidden sm:inline">
                 Determina el desorden del banco y ayudas
