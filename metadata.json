@@ -1,0 +1,6 @@
+{
+  "name": "Mecánico Pro: Simulador de Ensamble y Arranque de Motor",
+  "description": "Simulador interactivo de despiece, armado paso a paso y puesta a punto de un motor de 4 tiempos. Coloca piezas, ajusta torque, cala la distribución y arráncalo en el banco de pruebas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
