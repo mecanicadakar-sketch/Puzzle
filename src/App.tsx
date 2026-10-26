@@ -21,6 +21,8 @@ import {
   saveStoredPlayerName,
   getStoredDifficulty,
   saveStoredDifficulty,
+  saveLeaderboardRecord,
+  updatePlayerNameInLeaderboard,
 } from './utils/leaderboard';
 import { registerAndGetVisit } from './utils/visitCounter';
 import { Navbar } from './components/Navbar';
@@ -167,6 +169,7 @@ export default function App() {
   const [showScorecardModal, setShowScorecardModal] = useState<boolean>(false);
   const [showLeaderboardModal, setShowLeaderboardModal] = useState<boolean>(false);
   const [showNameModal, setShowNameModal] = useState<boolean>(false);
+  const [currentPlayerRecordId, setCurrentPlayerRecordId] = useState<string | null>(null);
 
   // Active modals
   const [activeModal, setActiveModal] = useState<
@@ -318,8 +321,12 @@ export default function App() {
   };
 
   const handleUpdatePlayerName = (newName: string) => {
-    setPlayerName(newName);
-    saveStoredPlayerName(newName);
+    const trimmed = newName.trim();
+    setPlayerName(trimmed);
+    saveStoredPlayerName(trimmed);
+    if (currentPlayerRecordId && trimmed) {
+      updatePlayerNameInLeaderboard(currentPlayerRecordId, trimmed);
+    }
   };
 
   // Mount a part
@@ -742,8 +749,32 @@ export default function App() {
     );
     setScorecard(finalBreakdown);
 
+    // Automatically register score into the Top 10 Leaderboard!
+    const effectiveName = (playerName && playerName.trim()) || 'Piloto Dakar';
+    const now = new Date();
+    const dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}/${now.getFullYear()}`;
+
+    const { entry, rankPosition } = saveLeaderboardRecord(
+      {
+        playerName: effectiveName,
+        timeSeconds: finalElapsed > 0 ? finalElapsed : 60,
+        timeFormatted: finalBreakdown.elapsedTimeFormatted,
+        score: finalBreakdown.totalScore,
+        accuracyPercent: finalBreakdown.accuracyPercent,
+        grade: finalBreakdown.rankGrade,
+        rankTitle: finalBreakdown.rankTitle,
+        date: dateStr,
+        difficulty,
+      },
+      currentPlayerRecordId
+    );
+
+    setCurrentPlayerRecordId(entry.id);
+
     showToast(
-      `¡Motor arrancado con éxito! Puntuación final: ${finalBreakdown.totalScore.toLocaleString()} PTS (${finalBreakdown.elapsedTimeFormatted}). Usa el pedal para acelerar.`,
+      `¡Motor en marcha! ${effectiveName} clasificado #${rankPosition} en el Top 10 (${finalBreakdown.totalScore.toLocaleString()} PTS). Usa el pedal para acelerar.`,
       'success'
     );
   };
@@ -1222,6 +1253,7 @@ export default function App() {
 
       {showLeaderboardModal && (
         <LeaderboardModal
+          currentPlayerId={currentPlayerRecordId}
           onClose={() => setShowLeaderboardModal(false)}
         />
       )}

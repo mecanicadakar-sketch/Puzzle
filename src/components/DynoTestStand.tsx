@@ -979,9 +979,9 @@ export const DynoTestStand: React.FC<DynoTestStandProps> = ({
   };
 
   return (
-    <div className="bg-[#0b0f15] border border-[#2d3748] rounded-2xl p-3.5 sm:p-6 shadow-2xl flex flex-col space-y-4 sm:space-y-6">
+    <div className="w-full max-w-full bg-[#0b0f15] border border-[#2d3748] rounded-xl sm:rounded-2xl p-2.5 sm:p-5 shadow-2xl flex flex-col space-y-3 sm:space-y-5 overflow-x-hidden">
       {/* Top Banner / Navigation */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#1f2937] pb-3 sm:pb-4 gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#1f2937] pb-2.5 sm:pb-4 gap-2.5">
         <div className="flex items-center gap-2.5 sm:gap-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
             <Gauge className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -1035,8 +1035,8 @@ export const DynoTestStand: React.FC<DynoTestStandProps> = ({
       </div>
 
       {/* 4-Cylinder Interactive Cutaway Engine in Real Time Motion */}
-      <div className="bg-[#111722] border border-[#232f42] rounded-2xl p-4 sm:p-5 shadow-2xl relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-gray-800">
+      <div className="w-full max-w-full bg-[#111722] border border-[#232f42] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 shadow-xl relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 mb-2.5 pb-2.5 border-b border-gray-800">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
               <Zap className="w-4 h-4 animate-pulse" />
@@ -1126,22 +1126,22 @@ export const DynoTestStand: React.FC<DynoTestStandProps> = ({
         </div>
 
         {/* Legend of 4 strokes */}
-        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] sm:text-xs font-mono-tech">
-          <div className="bg-[#0b0f17] border border-red-500/30 rounded-lg px-2.5 py-1.5 flex items-center gap-2 text-red-300">
+        <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[9px] sm:text-xs font-mono-tech">
+          <div className="bg-[#0b0f17] border border-red-500/30 rounded-lg px-2 py-1 flex items-center gap-1.5 text-red-300">
             <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-            <span>💥 Expansión / Combustión</span>
+            <span className="truncate">💥 Combustión</span>
           </div>
-          <div className="bg-[#0b0f17] border border-orange-500/30 rounded-lg px-2.5 py-1.5 flex items-center gap-2 text-orange-300">
+          <div className="bg-[#0b0f17] border border-orange-500/30 rounded-lg px-2 py-1 flex items-center gap-1.5 text-orange-300">
             <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
-            <span>💨 Escape (Válvula Naranja)</span>
+            <span className="truncate">💨 Escape</span>
           </div>
-          <div className="bg-[#0b0f17] border border-sky-500/30 rounded-lg px-2.5 py-1.5 flex items-center gap-2 text-sky-300">
+          <div className="bg-[#0b0f17] border border-sky-500/30 rounded-lg px-2 py-1 flex items-center gap-1.5 text-sky-300">
             <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
-            <span>🌀 Admisión (Válvula Azul)</span>
+            <span className="truncate">🌀 Admisión</span>
           </div>
-          <div className="bg-[#0b0f17] border border-emerald-500/30 rounded-lg px-2.5 py-1.5 flex items-center gap-2 text-emerald-300">
+          <div className="bg-[#0b0f17] border border-emerald-500/30 rounded-lg px-2 py-1 flex items-center gap-1.5 text-emerald-300">
             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-            <span>🔒 Compresión (Pistón sube)</span>
+            <span className="truncate">🔒 Compresión</span>
           </div>
         </div>
 
@@ -1169,32 +1169,32 @@ export const DynoTestStand: React.FC<DynoTestStandProps> = ({
       </div>
 
       {/* Main Dyno Dashboard Cluster */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="w-full max-w-full grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 overflow-hidden">
         {/* Analog Gauges Panel (Tachometer & Boost) */}
-        <div className="lg:col-span-2 bg-[#111722] border border-[#232f42] rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
+        <div className="lg:col-span-2 bg-[#111722] border border-[#232f42] rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 items-center">
             {/* Tachometer (Tacómetro) */}
             <div className="flex flex-col items-center">
-              <span className="text-xs font-racing font-bold text-gray-400 uppercase tracking-widest mb-2">
-                Tacómetro (x1000 RPM)
+              <span className="text-xs font-racing font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+                Tacómetro Principal (x1000 RPM)
               </span>
 
-              <div className="w-48 h-48 rounded-full border-4 border-[#334155] bg-radial from-[#1e293b] to-[#0b0f17] relative flex items-center justify-center shadow-inner">
+              <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full border-4 border-[#334155] bg-radial from-[#1e293b] to-[#0b0f17] relative flex items-center justify-center shadow-inner">
                 {/* Redline zone */}
-                <div className="absolute top-3 right-6 text-[9px] font-mono-tech text-red-500 font-bold">
+                <div className="absolute top-2.5 right-4 sm:right-6 text-[8px] sm:text-[9px] font-mono-tech text-red-500 font-bold">
                   REDLINE 7.2k
                 </div>
 
-                {/* Dial numbers */}
+                {/* Dial numbers with safe radius that never clips */}
                 {[0, 1, 2, 3, 4, 5, 6, 7].map((num) => {
                   const angle = -140 + num * 40;
                   const rad = (angle * Math.PI) / 180;
-                  const x = Math.sin(rad) * 68;
-                  const y = -Math.cos(rad) * 68;
+                  const x = Math.sin(rad) * 56;
+                  const y = -Math.cos(rad) * 56;
                   return (
                     <span
                       key={num}
-                      className={`absolute text-xs font-mono-tech font-bold ${
+                      className={`absolute text-[11px] sm:text-xs font-mono-tech font-bold ${
                         num >= 6 ? 'text-red-400' : 'text-gray-400'
                       }`}
                       style={{ transform: `translate(${x}px, ${y}px)` }}
@@ -1206,55 +1206,55 @@ export const DynoTestStand: React.FC<DynoTestStandProps> = ({
 
                 {/* Needle */}
                 <div
-                  className="w-1 h-20 bg-red-500 rounded-full origin-bottom absolute bottom-24 transition-transform duration-75 shadow-[0_0_8px_#ef4444]"
+                  className="w-1 h-16 sm:h-20 bg-red-500 rounded-full origin-bottom absolute bottom-20 sm:bottom-24 transition-transform duration-75 shadow-[0_0_8px_#ef4444]"
                   style={{
                     transform: `rotate(${-140 + (rpm / 7500) * 280}deg)`,
                   }}
                 />
 
                 {/* Center hub */}
-                <div className="w-8 h-8 rounded-full bg-gray-900 border-2 border-gray-600 z-10 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_#ef4444]" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 border-2 border-gray-600 z-10 flex items-center justify-center">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_#ef4444]" />
                 </div>
 
                 {/* Digital readout */}
-                <div className="absolute bottom-5 font-mono-tech text-lg font-bold text-white tracking-widest bg-black/50 px-2 py-0.5 rounded border border-gray-700">
-                  {Math.round(rpm)} <span className="text-[10px] text-gray-400 font-sans">RPM</span>
+                <div className="absolute bottom-3 sm:bottom-5 font-mono-tech text-base sm:text-lg font-bold text-white tracking-widest bg-black/60 px-2 py-0.5 rounded border border-gray-700">
+                  {Math.round(rpm)} <span className="text-[9px] sm:text-[10px] text-gray-400 font-sans">RPM</span>
                 </div>
               </div>
             </div>
 
             {/* Turbo Boost & Oil Pressure Gauges */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 w-full">
               {/* Turbo Boost */}
-              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-4 flex flex-col items-center">
-                <span className="text-[10px] font-racing text-gray-400 uppercase tracking-wider mb-2">
+              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-2.5 sm:p-4 flex flex-col items-center">
+                <span className="text-[9px] sm:text-[10px] font-racing text-gray-400 uppercase tracking-wider mb-1.5">
                   Presión Turbo
                 </span>
-                <div className="w-28 h-28 rounded-full border-2 border-gray-700 bg-gray-900 relative flex items-center justify-center">
+                <div className="w-22 h-22 sm:w-28 sm:h-28 rounded-full border-2 border-gray-700 bg-gray-900 relative flex items-center justify-center">
                   <div
-                    className="w-0.5 h-12 bg-amber-400 origin-bottom absolute bottom-14 transition-transform duration-100"
+                    className="w-0.5 h-9 sm:h-12 bg-amber-400 origin-bottom absolute bottom-11 sm:bottom-14 transition-transform duration-100"
                     style={{ transform: `rotate(${-120 + boostBar * 180}deg)` }}
                   />
-                  <div className="w-4 h-4 rounded-full bg-gray-800 border border-gray-600 z-10" />
-                  <span className="absolute bottom-2 font-mono-tech text-xs text-amber-400 font-bold">
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-gray-800 border border-gray-600 z-10" />
+                  <span className="absolute bottom-1.5 sm:bottom-2 font-mono-tech text-[10px] sm:text-xs text-amber-400 font-bold">
                     {boostBar > 0 ? `+${boostBar.toFixed(2)}` : '0.00'} Bar
                   </span>
                 </div>
               </div>
 
               {/* Oil Pressure */}
-              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-4 flex flex-col items-center">
-                <span className="text-[10px] font-racing text-gray-400 uppercase tracking-wider mb-2">
+              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-2.5 sm:p-4 flex flex-col items-center">
+                <span className="text-[9px] sm:text-[10px] font-racing text-gray-400 uppercase tracking-wider mb-1.5">
                   Presión Aceite
                 </span>
-                <div className="w-28 h-28 rounded-full border-2 border-gray-700 bg-gray-900 relative flex items-center justify-center">
+                <div className="w-22 h-22 sm:w-28 sm:h-28 rounded-full border-2 border-gray-700 bg-gray-900 relative flex items-center justify-center">
                   <div
-                    className="w-0.5 h-12 bg-emerald-400 origin-bottom absolute bottom-14 transition-transform duration-100"
+                    className="w-0.5 h-9 sm:h-12 bg-emerald-400 origin-bottom absolute bottom-11 sm:bottom-14 transition-transform duration-100"
                     style={{ transform: `rotate(${-120 + (oilPressurePsi / 80) * 240}deg)` }}
                   />
-                  <div className="w-4 h-4 rounded-full bg-gray-800 border border-gray-600 z-10" />
-                  <span className="absolute bottom-2 font-mono-tech text-xs text-emerald-400 font-bold">
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-gray-800 border border-gray-600 z-10" />
+                  <span className="absolute bottom-1.5 sm:bottom-2 font-mono-tech text-[10px] sm:text-xs text-emerald-400 font-bold">
                     {oilPressurePsi} PSI
                   </span>
                 </div>
