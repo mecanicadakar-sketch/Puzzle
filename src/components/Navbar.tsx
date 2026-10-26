@@ -99,21 +99,21 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="bg-[#0b0f17]/85 border-b border-[#212936] px-3 sm:px-4 lg:px-6 py-2.5 sticky top-0 z-40 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex flex-col gap-2.5">
         {/* Top Row: Brand & Quick Action Utilities */}
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           {/* Brand with Engine Puzzle Car Logo */}
           <div
-            className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer group"
+            className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer group min-w-0"
             onClick={onOpenAccessModal}
             title="Abrir Ficha de Ingreso y Dificultad"
           >
             <img
               src="/assets/aistudio/Engine-Puzzle-Car_183fdf67.jpg"
               alt="Engine Puzzle Car Logo"
-              className="h-14 sm:h-16 md:h-20 w-auto rounded-2xl shadow-xl border-2 border-amber-500/40 bg-black/40 p-0.5 object-contain group-hover:scale-105 transition-transform shrink-0"
+              className="h-12 sm:h-16 md:h-20 w-auto rounded-2xl shadow-xl border-2 border-amber-500/40 bg-black/40 p-0.5 object-contain group-hover:scale-105 transition-transform shrink-0"
             />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <h1 className="font-racing font-extrabold text-base sm:text-lg lg:text-xl text-white tracking-wider flex items-center gap-1 leading-tight">
+                <h1 className="font-racing font-extrabold text-sm sm:text-lg lg:text-xl text-white tracking-wider flex items-center gap-1 leading-tight">
                   <span className="text-amber-400">JUEGO DE MEMORIA</span>
                   <span className="text-cyan-400">PARA MECÁNICOS</span>
                 </h1>
@@ -128,16 +128,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Quick Actions (Visits, Records, Manual, Auto, Reset, Sound) */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap shrink-0">
             {/* Numerador de Visitas Odometer */}
             {visitCountFormatted && (
               <div
-                className="h-9 sm:h-10 px-2 sm:px-3 bg-[#090d14] border border-amber-500/30 rounded-xl flex items-center gap-1.5 text-xs font-mono-tech text-amber-300 shadow-inner shrink-0"
+                className="h-9 px-2 sm:px-3 bg-[#090d14] border border-amber-500/30 rounded-xl flex items-center gap-1.5 text-xs font-mono-tech text-amber-300 shadow-inner shrink-0"
                 title="Contador / Numerador de Visitas del Taller Mecánico"
               >
                 <Eye className="w-4 h-4 text-amber-400 shrink-0" />
                 <span className="hidden md:inline uppercase text-[10px] text-gray-400 font-bold">Visitas:</span>
-                <span className="font-extrabold text-amber-300 tracking-wider bg-amber-950/70 px-2 py-0.5 rounded border border-amber-500/30">
+                <span className="font-extrabold text-amber-300 tracking-wider bg-amber-950/70 px-1.5 py-0.5 rounded border border-amber-500/30 text-[11px] sm:text-xs">
                   {visitCountFormatted}
                 </span>
               </div>
@@ -146,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Leaderboard / Récords Button */}
             <button
               onClick={onOpenLeaderboard}
-              className="h-9 sm:h-10 px-2.5 sm:px-3 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-racing font-bold rounded-xl text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-md transition-all active:scale-95 shrink-0"
+              className="h-9 px-2.5 sm:px-3 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-racing font-bold rounded-xl text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-md transition-all active:scale-95 shrink-0"
               title="Ver Tabla de Récords"
             >
               <Trophy className="w-4 h-4 text-black shrink-0" />
@@ -187,13 +187,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Sparkles className="w-3.5 h-3.5" />
             </button>
 
-            {/* Reset Engine */}
+            {/* Reset Engine Button */}
             <button
               onClick={onResetEngine}
-              className="h-9 w-9 bg-gray-800/80 hover:bg-red-950/40 text-gray-400 hover:text-red-300 rounded-xl border border-gray-700 hover:border-red-500/40 flex items-center justify-center cursor-pointer transition-all shrink-0"
-              title="Reiniciar armado y banco"
+              className="h-9 px-2.5 sm:px-3 bg-red-950/70 hover:bg-red-900/90 text-red-200 hover:text-white rounded-xl border border-red-500/50 flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-95 shrink-0 shadow-sm"
+              title="Reiniciar armado y banco de piezas"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3.5 h-3.5 text-red-400" />
+              <span className="text-xs font-racing font-bold">Reiniciar</span>
             </button>
 
             {/* Sound Toggle */}

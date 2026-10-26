@@ -50,6 +50,7 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
 
   const [isSuccess, setIsSuccess] = useState<boolean>(isInitiallyCompleted);
   const [activeBoltAnim, setActiveBoltAnim] = useState<number | null>(null);
+  const [isAutoReturning, setIsAutoReturning] = useState<boolean>(false);
 
   // Active target based on stage
   const activeStage = Math.min(currentStageIndex, 2);
@@ -67,12 +68,9 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
   const handleApplyCurrentStage = () => {
     soundEngine.playToolSound('ratchet');
     
-    // Animate bolts in cross tightening sequence
-    setActiveBoltAnim(1);
-    setTimeout(() => setActiveBoltAnim(3), 120);
-    setTimeout(() => setActiveBoltAnim(2), 240);
-    setTimeout(() => setActiveBoltAnim(4), 360);
-    setTimeout(() => setActiveBoltAnim(null), 520);
+    // Animate active torque stage box
+    setActiveBoltAnim(activeStage + 1);
+    setTimeout(() => setActiveBoltAnim(null), 450);
 
     const nextApplied = [...appliedStageTorques];
     nextApplied[activeStage] = selectedTorque;
@@ -85,6 +83,12 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
       const isAccurate = Math.abs(selectedTorque - targetTorque) <= 3;
       setIsSuccess(isAccurate);
       onApplyTorque(selectedTorque);
+      setIsAutoReturning(true);
+
+      // Automatically return to workbench panel after brief feedback so the mobile player is immediately taken back
+      setTimeout(() => {
+        onClose();
+      }, 500);
     } else {
       // Advance to next stage (Stage 1 -> 2, or Stage 2 -> 3)
       const nextStage = activeStage + 1;
@@ -95,6 +99,11 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
       const startValue = Math.max(selectedTorque, nextTarget - 5);
       setSelectedTorque(startValue);
     }
+  };
+
+  const handleConfirmAndClose = () => {
+    onApplyTorque(selectedTorque);
+    onClose();
   };
 
   const handleReset = () => {
@@ -211,9 +220,13 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
             <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-xl p-3 flex items-center gap-2.5 text-emerald-300 text-xs">
               <CheckCircle className="w-5 h-5 shrink-0 text-emerald-400" />
               <div>
-                <p className="font-bold text-emerald-200">¡Secuencia de 3 Aprietes Completada con Éxito!</p>
+                <p className="font-bold text-emerald-200">
+                  {isAutoReturning ? '✓ ¡Secuencia de 3 Aprietes Completada!' : '¡Secuencia de 3 Aprietes Completada con Éxito!'}
+                </p>
                 <p className="text-emerald-400/80 text-[11px] mt-0.5">
-                  Los pernos fueron asentados en {appliedStageTorques[0]} Nm, llevados a {appliedStageTorques[1]} Nm y finalizados a {appliedStageTorques[2]} Nm.
+                  {isAutoReturning
+                    ? 'Volviendo automáticamente al panel banco de trabajo...'
+                    : `Los pernos fueron asentados en ${appliedStageTorques[0]} Nm, llevados a ${appliedStageTorques[1]} Nm y finalizados a ${appliedStageTorques[2]} Nm.`}
                 </p>
               </div>
             </div>
@@ -314,44 +327,57 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
               <div>
                 <h4 className="text-xs sm:text-sm font-semibold text-white">Pernos en Secuencia Cruzada</h4>
                 <p className="text-[10px] sm:text-xs text-gray-400">
-                  {currentStageIndex === 0 && 'Ajusta la escala a la Etapa 1 y aprieta en cruz.'}
-                  {currentStageIndex === 1 && 'Etapa 1 asentada. Aumenta la escala para la Etapa 2.'}
-                  {currentStageIndex === 2 && 'Etapa 2 lista. Calibra al par nominal final (Etapa 3).'}
-                  {currentStageIndex >= 3 && 'Pernos apretados a la tensión final especificada.'}
+                  {currentStageIndex === 0 && 'Ajusta la escala al 1er torque y aprieta en cruz.'}
+                  {currentStageIndex === 1 && '1er torque asentado. Sube la escala al 2do torque.'}
+                  {currentStageIndex === 2 && '2do torque listo. Calibra al 3er torque nominal final.'}
+                  {currentStageIndex >= 3 && 'Secuencia de 3 torques finalizada con éxito.'}
                 </p>
               </div>
             </div>
 
-            {/* Visual Bolt representation */}
-            <div className="grid grid-cols-4 gap-1.5 sm:gap-2 py-1">
-              {[1, 2, 3, 4].map((bolt) => {
-                const isAnim = activeBoltAnim === bolt;
-                const isFinal = currentStageIndex >= 3;
-                const lastTorque =
-                  currentStageIndex >= 3
-                    ? appliedStageTorques[2]
-                    : currentStageIndex > 0
-                    ? appliedStageTorques[currentStageIndex - 1]
-                    : null;
+            {/* Solo los 3 cuadros: Primer Torque, Segundo Torque, Tercer Torque */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-2.5 py-1">
+              {[
+                { label: 'Primer Torque', stage: 'Etapa 1', target: stageTargets[0], idx: 0 },
+                { label: 'Segundo Torque', stage: 'Etapa 2', target: stageTargets[1], idx: 1 },
+                { label: 'Tercer Torque', stage: 'Etapa 3', target: stageTargets[2], idx: 2 },
+              ].map(({ label, stage, target, idx }) => {
+                const isPassed = appliedStageTorques[idx] !== null;
+                const isCurrent = currentStageIndex === idx;
+                const isAnim = activeBoltAnim === idx + 1;
+                const torqueDisplay = isPassed
+                  ? `${appliedStageTorques[idx]} Nm`
+                  : isCurrent
+                  ? `${selectedTorque} Nm`
+                  : `${target} Nm`;
 
                 return (
                   <div
-                    key={bolt}
-                    className={`h-12 sm:h-14 rounded-lg border flex flex-col items-center justify-center transition-all ${
+                    key={idx}
+                    className={`h-16 sm:h-18 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 transition-all text-center ${
                       isAnim
-                        ? 'bg-amber-500/40 border-amber-400 text-amber-200 scale-105 shadow-md shadow-amber-500/20'
-                        : isFinal
-                        ? isSuccess
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                          : 'bg-amber-500/20 border-amber-500 text-amber-300'
-                        : lastTorque !== null
-                        ? 'bg-blue-500/20 border-blue-500 text-blue-300'
-                        : 'bg-[#0d1117] border-gray-700 text-gray-400'
+                        ? 'bg-amber-500/40 border-amber-300 text-white scale-105 shadow-lg shadow-amber-500/30'
+                        : isPassed
+                        ? 'bg-emerald-950/50 border-emerald-500 text-emerald-300 shadow-sm shadow-emerald-500/20'
+                        : isCurrent
+                        ? 'bg-amber-500/20 border-amber-400 text-amber-200 ring-2 ring-amber-400/40 shadow-md shadow-amber-500/20'
+                        : 'bg-[#0d1117] border-gray-800 text-gray-500 opacity-60'
                     }`}
                   >
-                    <span className="text-[9px] sm:text-[10px] font-mono-tech">Perno #{bolt}</span>
-                    <span className="text-[11px] sm:text-xs font-bold">
-                      {lastTorque !== null ? `${lastTorque} Nm` : 'Libre'}
+                    <span className="text-[10px] sm:text-[11px] font-racing font-bold tracking-wide uppercase truncate w-full">
+                      {label}
+                    </span>
+                    <div className="text-sm sm:text-base font-racing font-extrabold my-0.5">
+                      {torqueDisplay}
+                    </div>
+                    <span className="text-[9px] sm:text-[10px] font-mono-tech truncate">
+                      {isPassed ? (
+                        <span className="text-emerald-400 font-bold">✓ Aplicado</span>
+                      ) : isCurrent ? (
+                        <span className="text-amber-400 font-semibold animate-pulse">● Ajustando</span>
+                      ) : (
+                        <span className="text-gray-500">Pendiente</span>
+                      )}
                     </span>
                   </div>
                 );
@@ -378,15 +404,21 @@ export const TorqueWrenchModal: React.FC<TorqueWrenchModalProps> = ({
               ) : (
                 <button
                   type="button"
-                  onClick={onClose}
-                  className={`flex-1 py-3 px-3 sm:px-4 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer min-h-[44px] transition-all active:scale-98 ${
+                  onClick={handleConfirmAndClose}
+                  className={`flex-1 py-3 px-3 sm:px-4 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer min-h-[46px] transition-all active:scale-98 ${
                     isSuccess
-                      ? 'bg-emerald-600 hover:bg-emerald-500'
+                      ? 'bg-emerald-600 hover:bg-emerald-500 ring-2 ring-emerald-400/50'
                       : 'bg-amber-600 hover:bg-amber-500'
                   }`}
                 >
                   <CheckCircle className="w-4 h-4" />
-                  <span>{isSuccess ? 'Confirmar Apriete y Volver al Banco' : 'Aceptar este Par y Volver al Banco'}</span>
+                  <span>
+                    {isAutoReturning
+                      ? '✓ Volviendo al Banco de Trabajo...'
+                      : isSuccess
+                      ? 'Confirmar Apriete y Volver al Banco'
+                      : 'Aceptar este Par y Volver al Banco'}
+                  </span>
                 </button>
               )}
 

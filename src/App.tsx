@@ -53,6 +53,7 @@ import {
   Eye,
   Award,
   Gauge,
+  RotateCcw,
 } from 'lucide-react';
 
 export default function App() {
@@ -385,17 +386,9 @@ export default function App() {
     // Keep this newly mounted part selected so details card shows its status
     setSelectedPart(part);
 
-    // Derive directly to the engine mounting bench
-    setMobileTab('engine');
-    setTimeout(() => {
-      const standEl = document.getElementById('engine-workbench-stand');
-      if (standEl) {
-        standEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    }, 100);
-
     // Give default torque or open tool modals directly
     if (part.torqueRequiredNm) {
+      setMobileTab('engine');
       setPartTorques((prev) => ({
         ...prev,
         [partId]: Math.round(part.torqueRequiredNm! * 0.7), // Starts slightly hand-tightened
@@ -409,18 +402,21 @@ export default function App() {
         setActiveModal('torque');
       }, 350);
     } else if (part.id === 'oil_fluid') {
+      setMobileTab('engine');
       setOilLevel(15); // Inicia en nivel bajo (0.8 L) para que el cursor no coincida de primera y el usuario deba subirlo
       showToast('¡Bidón de aceite SAE 5W-40 listo! Mueve el cursor para subir el nivel al cárter hasta 4.5 L.', 'info');
       setTimeout(() => {
         setActiveModal('oil');
       }, 350);
     } else if (part.id === 'coolant_fluid') {
+      setMobileTab('engine');
       setCoolantLiters(1.0); // Inicia en nivel bajo (1.0 L) para que el cursor no coincida de primera y el usuario deba subirlo
       showToast('¡Bidón de refrigerante OAT listo! Mueve el cursor para subir el nivel en el vaso hasta 5.0 L.', 'info');
       setTimeout(() => {
         setActiveModal('coolant');
       }, 350);
     } else if (part.requiresTimingAlignment) {
+      setMobileTab('engine');
       const outOfSyncOffset = 2;
       setTimingOffsetTeeth(outOfSyncOffset);
       setStats((prev) => ({ ...prev, perfectTiming: false }));
@@ -432,6 +428,7 @@ export default function App() {
         setActiveModal('timing');
       }, 350);
     } else if (part.id === 'camshafts') {
+      setMobileTab('engine');
       const outOfSyncOffset = 2;
       setTimingOffsetTeeth(outOfSyncOffset);
       setStats((prev) => ({ ...prev, perfectTiming: false }));
@@ -443,9 +440,14 @@ export default function App() {
         setActiveModal('timing');
       }, 350);
     } else if (part.id === 'crankcase_block') {
-      showToast('¡Bloque de Cilindros montado en el soporte! Banco listo para recibir el cigüeñal.', 'success');
+      // Bloque de motor no requiere torque: volver automáticamente al panel de piezas en celulares
+      handleReturnToWorkbench('¡Bloque de Cilindros fijado en el soporte! Selecciona la siguiente pieza en el banco.');
+    } else if (part.id === 'head_gasket') {
+      // Junta de culata no requiere torque: volver automáticamente al panel de piezas en celulares
+      handleReturnToWorkbench('¡Junta de Culata colocada sobre el bloque! Selecciona la culata en el banco.');
     } else {
-      showToast(`¡${part.name} instalado con éxito en el motor!`, 'success');
+      // Cualquier otra pieza sin torque ni calibración interactiva
+      handleReturnToWorkbench(`¡${part.name} instalado con éxito en el motor! Selecciona la siguiente pieza.`);
     }
   };
 
@@ -605,23 +607,34 @@ export default function App() {
   const handleReturnToWorkbench = (hintMessage?: string) => {
     setActiveModal(null);
 
-    // If all parts are mounted, suggest checking Dyno
-    if (installedPartIds.length >= ENGINE_PARTS.length) {
-      setMobileTab('both');
-      showToast('¡Motor 100% montado y calibrado! Pasa al Banco Dyno para probar el encendido.', 'success');
-      return;
+    // Switch mobile view back to workbench so the player never gets lost on mobile
+    setMobileTab('workbench');
+
+    // Instantly reset scroll to top and ensure parts tray is cleanly brought into view on mobile
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        const benchEl = document.getElementById('workshop-parts-bench');
+        if (benchEl) {
+          benchEl.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+      });
+
+      setTimeout(() => {
+        const benchEl = document.getElementById('workshop-parts-bench');
+        if (benchEl) {
+          benchEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 80);
     }
 
-    // Switch mobile view back to workbench so the player never gets lost
-    setMobileTab('workbench');
-    setTimeout(() => {
-      const benchEl = document.getElementById('workshop-parts-bench');
-      if (benchEl) {
-        benchEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 120);
-
-    if (hintMessage) {
+    if (installedPartIds.length >= ENGINE_PARTS.length) {
+      showToast('¡Motor 100% montado y calibrado! Pulsa "Ir al Banco de Pruebas" para arrancar el motor.', 'success');
+    } else if (hintMessage) {
       showToast(hintMessage, 'info');
     }
   };
@@ -730,14 +743,9 @@ export default function App() {
     setScorecard(finalBreakdown);
 
     showToast(
-      `¡Motor arrancado con éxito! Puntuación final: ${finalBreakdown.totalScore.toLocaleString()} PTS (${finalBreakdown.elapsedTimeFormatted}).`,
+      `¡Motor arrancado con éxito! Puntuación final: ${finalBreakdown.totalScore.toLocaleString()} PTS (${finalBreakdown.elapsedTimeFormatted}). Usa el pedal para acelerar.`,
       'success'
     );
-
-    // Automatically reveal scorecard after celebration
-    setTimeout(() => {
-      setShowScorecardModal(true);
-    }, 1800);
   };
 
   // Dyno event: Failed start attempt
@@ -828,12 +836,12 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-2.5 sm:p-4 lg:p-6 space-y-3.5 sm:space-y-5">
         {/* Automotive Workshop Precision Livery Strip */}
-        <div className="bg-[#0b101a]/85 backdrop-blur-md border border-[#232f42] rounded-2xl px-3.5 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between flex-wrap gap-2 text-sm shadow-md">
-          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap min-w-0">
+        <div className="bg-[#0b101a]/85 backdrop-blur-md border border-[#232f42] rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between flex-wrap gap-2 text-xs sm:text-sm shadow-md w-full">
+          <div className="flex items-center gap-2 flex-wrap min-w-0">
             <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping shrink-0" />
-            <span className="font-racing text-white tracking-wide flex items-center gap-1.5 text-sm sm:text-base">
-              <span className="text-amber-400 font-extrabold truncate">JUEGO DE MEMORIA:</span>
-              <span className="text-cyan-300 font-bold truncate">MOTOR 2.0L TURBO 16V</span>
+            <span className="font-racing text-white tracking-wide flex items-center gap-1 text-xs sm:text-sm">
+              <span className="text-amber-400 font-extrabold">JUEGO DE MEMORIA:</span>
+              <span className="text-cyan-300 font-bold">MOTOR 2.0L TURBO 16V</span>
             </span>
             <span className="text-gray-600 hidden md:inline">|</span>
             <span className="text-gray-300 font-mono-tech hidden md:inline text-xs">
@@ -841,52 +849,37 @@ export default function App() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 font-mono-tech text-xs ml-auto sm:ml-0 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 font-mono-tech text-xs ml-auto sm:ml-0 flex-wrap">
             {/* Odometer Visit Counter Badge */}
             <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#070b12] border border-amber-500/30 text-amber-300 font-mono-tech text-xs shadow-inner"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#070b12] border border-amber-500/30 text-amber-300 font-mono-tech text-[11px] shadow-inner"
               title="Numerador de visitas registradas en el taller"
             >
-              <Eye className="w-4 h-4 text-amber-400 shrink-0" />
-              <span className="text-gray-400 uppercase text-[10px] hidden xs:inline">Visitas:</span>
+              <Eye className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span className="font-extrabold text-amber-300 tracking-wider">#{visitInfo.formatted}</span>
             </div>
 
-            <span className="text-gray-300 text-xs sm:text-sm">
+            <span className="text-gray-300 text-[11px] sm:text-xs">
               Mecánico: <strong className="text-amber-300">{playerName}</strong>
             </span>
-            <span className="text-gray-300 hidden xs:inline text-xs sm:text-sm">
-              Nivel:{' '}
-              <strong
-                className={
-                  difficulty === 'dakar'
-                    ? 'text-red-400'
-                    : difficulty === 'aprendiz'
-                    ? 'text-emerald-400'
-                    : 'text-amber-400'
-                }
-              >
-                {difficulty === 'dakar' ? 'Jefe de Taller' : difficulty === 'aprendiz' ? 'Aprendiz' : 'Pro'}
-              </strong>
-            </span>
 
-            {/* Arcade Combo Multiplier Badge */}
-            {comboCount >= 2 && (
-              <div
-                className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-red-600 via-amber-500 to-yellow-400 text-black font-racing text-xs font-black animate-bounce shadow-lg shadow-amber-500/30"
-                title={`¡Racha Mecánica activa! Multiplicador x${comboCount}`}
-              >
-                <span>🔥 RACHA x{comboCount}</span>
-              </div>
-            )}
+            {/* Prominent Mobile & Desktop Restart Button */}
+            <button
+              onClick={handleResetEngine}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-950/80 hover:bg-red-900 text-red-200 hover:text-white border border-red-500/50 cursor-pointer transition-all active:scale-95 text-xs font-racing font-bold shadow-md min-h-[32px]"
+              title="Reiniciar el juego y barajar de nuevo el banco de piezas"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-red-400" />
+              <span>Reiniciar</span>
+            </button>
 
             {/* Arcade Achievements Trigger Button */}
             <button
               onClick={() => setShowAchievementsModal(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-950/70 hover:bg-purple-900/90 text-purple-300 hover:text-white border border-purple-500/40 cursor-pointer transition-colors text-xs font-racing min-h-[34px]"
+              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-purple-950/70 hover:bg-purple-900/90 text-purple-300 hover:text-white border border-purple-500/40 cursor-pointer transition-colors text-xs font-racing min-h-[32px]"
               title="Abrir Logros y Trofeos Arcade del Taller"
             >
-              <span>🏆 Logros ({unlockedAchievements.length}/{ARCADE_ACHIEVEMENTS.length})</span>
+              <span>🏆 Logros [{unlockedAchievements.length}/7]</span>
             </button>
 
             {/* Background view & intensity toggle */}
@@ -896,7 +889,7 @@ export default function App() {
                   prev === 'intenso' ? 'maximo' : prev === 'maximo' ? 'sutil' : 'intenso'
                 );
               }}
-              className="px-2.5 py-1 rounded-lg bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 hover:text-white border border-cyan-500/40 cursor-pointer transition-colors text-xs font-racing min-h-[34px] flex items-center gap-1"
+              className="px-2 py-1 rounded-lg bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 hover:text-white border border-cyan-500/40 cursor-pointer transition-colors text-xs font-racing min-h-[32px] flex items-center gap-1"
               title="Cambiar visibilidad de la imagen de fondo del taller"
             >
               <span>🖼️ Fondo: {bgIntensity}</span>
@@ -904,7 +897,7 @@ export default function App() {
 
             <button
               onClick={() => setShowInitialAccessModal(true)}
-              className="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white border border-gray-700 cursor-pointer transition-colors text-xs font-racing min-h-[34px]"
+              className="px-2 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white border border-gray-700 cursor-pointer transition-colors text-xs font-racing min-h-[32px]"
             >
               ⚙️ Ficha
             </button>
@@ -914,7 +907,7 @@ export default function App() {
         {/* Toast / Notification banner */}
         {notification && (
           <div
-            className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border flex items-center justify-between text-xs transition-all duration-300 shadow-xl ${
+            className={`px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl border flex items-center justify-between text-xs transition-all duration-300 shadow-xl gap-2 w-full ${
               notification.type === 'success'
                 ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300'
                 : notification.type === 'warning'
@@ -922,15 +915,16 @@ export default function App() {
                 : 'bg-blue-950/50 border-blue-500/40 text-blue-300'
             }`}
           >
-            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               {notification.type === 'success' && <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />}
               {notification.type === 'warning' && <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />}
               {notification.type === 'info' && <Info className="w-4 h-4 shrink-0 text-blue-400" />}
-              <span className="font-medium leading-relaxed truncate sm:whitespace-normal">{notification.message}</span>
+              <span className="font-medium leading-snug break-words text-xs">{notification.message}</span>
             </div>
             <button
               onClick={() => setNotification(null)}
-              className="text-gray-400 hover:text-white px-1.5 text-sm font-bold cursor-pointer shrink-0 ml-2"
+              className="text-gray-400 hover:text-white px-2 py-1 text-sm font-bold cursor-pointer shrink-0"
+              title="Cerrar notificación"
             >
               ✕
             </button>
@@ -941,17 +935,17 @@ export default function App() {
         {currentMode === 'assembly' && (
           <div className="space-y-4 sm:space-y-6 pb-16 lg:pb-0">
             {/* Quick Switch to Dyno Test Stand Bar */}
-            <div className="bg-gradient-to-r from-[#0d131f] via-[#1a2336] to-[#0d131f] border-2 border-amber-500/50 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
-              <div className="flex items-center gap-3 min-w-0">
+            <div className="bg-gradient-to-r from-[#0d131f] via-[#1a2336] to-[#0d131f] border-2 border-amber-500/50 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xl w-full">
+              <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto min-w-0">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 via-red-500/20 to-blue-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-lg">
                   <Gauge className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
                 </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                     <h4 className="font-racing font-bold text-sm sm:text-base text-white">
                       Banco Dyno de Pruebas
                     </h4>
-                    <span className="text-[10px] sm:text-xs font-mono-tech px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
+                    <span className="text-[10px] sm:text-xs font-mono-tech px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
                       {installedPartIds.length}/15 Piezas Montadas
                     </span>
                     {installedPartIds.length === 15 && (
@@ -960,15 +954,15 @@ export default function App() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] sm:text-xs text-gray-300 truncate sm:whitespace-normal">
-                    Pasa al Dyno en cualquier momento para probar arranque, compresión y ver los pistones acelerando en tiempo real.
+                  <p className="text-[11px] sm:text-xs text-gray-300 break-words leading-relaxed mt-0.5">
+                    Pasa al Dyno en cualquier momento para probar arranque, compresión y ver los pistones.
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={() => setCurrentMode('dyno')}
-                className="w-full sm:w-auto py-2.5 px-5 bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0"
+                className="w-full sm:w-auto py-2.5 sm:py-3 px-4 sm:px-5 bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-white font-racing font-bold text-xs sm:text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0 min-h-[42px]"
               >
                 <Gauge className="w-4 h-4 text-white" />
                 <span>PASAR A BANCO DYNO</span>
@@ -1139,6 +1133,14 @@ export default function App() {
                     title="Ver en el Motor"
                   >
                     ⚙️
+                  </button>
+
+                  <button
+                    onClick={handleResetEngine}
+                    className="py-2 px-2.5 bg-red-950/70 hover:bg-red-900 text-red-300 hover:text-white border border-red-500/40 text-xs font-racing rounded-xl cursor-pointer min-h-[38px] flex items-center justify-center active:scale-95"
+                    title="Reiniciar partida"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-red-400" />
                   </button>
                 </div>
               </div>

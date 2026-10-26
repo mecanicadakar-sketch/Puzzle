@@ -3,6 +3,7 @@ import confetti from 'canvas-confetti';
 import { EnginePartId, EngineDiagnosticResult, PartTorquesMap } from '../types/engine';
 import { ENGINE_PARTS } from '../data/engineParts';
 import { soundEngine } from '../services/soundEngine';
+import { AcceleratorPedal } from './AcceleratorPedal';
 import {
   Gauge,
   Key,
@@ -1142,6 +1143,28 @@ export const DynoTestStand: React.FC<DynoTestStandProps> = ({
             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
             <span>🔒 Compresión (Pistón sube)</span>
           </div>
+        </div>
+
+        {/* Pedal de Acelerador Realista Abajo del Motor en Funcionamiento */}
+        <div className="mt-4 pt-3 border-t border-gray-800/80">
+          <AcceleratorPedal
+            throttle={throttle}
+            onThrottleChange={(val) => {
+              throttleRef.current = val;
+              setThrottle(val);
+            }}
+            onThrottleRelease={() => {
+              if (throttleRef.current > 0.2 && engineStateRef.current === 'running') {
+                soundEngine.playBlowOff();
+              }
+              throttleRef.current = 0;
+              setThrottle(0);
+            }}
+            rpm={rpm}
+            engineState={engineState}
+            boostBar={boostBar}
+            oilPressurePsi={oilPressurePsi}
+          />
         </div>
       </div>
 

@@ -233,7 +233,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
               )}
             </div>
 
-            <p className="text-xs sm:text-sm text-gray-300 mt-1 line-clamp-1 sm:line-clamp-none">
+            <p className="text-xs text-gray-300 mt-1 leading-snug break-words">
               {difficulty === 'aprendiz'
                 ? 'Modo aprendiz guiado: piezas con asistencia técnica e indicadores de montaje en azul.'
                 : 'Las 15 piezas cambian de lugar aleatoriamente en cada partida. ¡Identifica los componentes mecánicos!'}
@@ -308,9 +308,9 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         </span>
       </div>
 
-      {/* Scattered Puzzle Grid */}
+      {/* Scattered Puzzle Grid without internal nested scroll */}
       <div
-        className={`relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3.5 max-h-[500px] sm:max-h-[460px] overflow-y-auto pr-0.5 p-0.5 transition-opacity ${
+        className={`relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3.5 p-0.5 transition-opacity ${
           isShufflingAnim ? 'opacity-40 scale-98' : 'opacity-100'
         }`}
       >
