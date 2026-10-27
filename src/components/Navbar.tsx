@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { WorkshopMode, AssemblyDifficulty } from '../types/engine';
 import { formatTime } from '../utils/scoring';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface NavbarProps {
   currentMode: WorkshopMode;
@@ -100,16 +101,16 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto flex flex-col gap-2.5">
         {/* Top Row: Brand & Quick Action Utilities */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          {/* Brand with Engine Puzzle Car Logo */}
+          {/* Brand with Clean Engine Puzzle Car Logo */}
           <div
-            className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer group min-w-0"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer group min-w-0"
             onClick={onOpenAccessModal}
             title="Abrir Ficha de Ingreso y Dificultad"
           >
             <img
-              src="/assets/aistudio/Engine-Puzzle-Car_183fdf67.jpg"
+              src="/assets/aistudio/logo-Engine-car_cd954c6d.png"
               alt="Engine Puzzle Car Logo"
-              className="h-12 sm:h-16 md:h-20 w-auto rounded-2xl shadow-xl border-2 border-amber-500/40 bg-black/40 p-0.5 object-contain group-hover:scale-105 transition-transform shrink-0"
+              className="h-16 sm:h-22 md:h-28 lg:h-32 w-auto object-contain drop-shadow-xl group-hover:scale-105 transition-transform shrink-0"
             />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -127,8 +128,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Quick Actions (Visits, Records, Manual, Auto, Reset, Sound) */}
+          {/* Quick Actions (Install PWA, Visits, Records, Manual, Auto, Reset, Sound) */}
           <div className="flex items-center gap-1 sm:gap-2 flex-wrap shrink-0">
+            {/* PWA Install Button for Offline Mobile Play */}
+            <PWAInstallButton variant="navbar" />
             {/* Numerador de Visitas Odometer */}
             {visitCountFormatted && (
               <div

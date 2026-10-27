@@ -1168,276 +1168,313 @@ export const DynoTestStand: React.FC<DynoTestStandProps> = ({
         </div>
       </div>
 
-      {/* Main Dyno Dashboard Cluster */}
-      <div className="w-full max-w-full grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 overflow-hidden">
-        {/* Analog Gauges Panel (Tachometer & Boost) */}
-        <div className="lg:col-span-2 bg-[#111722] border border-[#232f42] rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 items-center">
-            {/* Tachometer (Tacómetro) */}
-            <div className="flex flex-col items-center">
-              <span className="text-xs font-racing font-bold text-gray-400 uppercase tracking-widest mb-1.5">
-                Tacómetro Principal (x1000 RPM)
+      {/* Main Dyno Dashboard Cluster - Reacomodado y Compacto para Celular */}
+      <div className="w-full max-w-full bg-[#111722] border border-[#232f42] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 shadow-xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 sm:gap-4 items-center">
+          {/* SECCIÓN 1 (Lado Izquierdo / Arriba en Celular): Relojes e Instrumentos Compactos */}
+          <div className="lg:col-span-7 flex flex-col justify-between space-y-2">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-1">
+              <span className="text-[10px] sm:text-xs font-racing font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Gauge className="w-3.5 h-3.5 text-amber-400" />
+                Relojes & Telemetría Dyno
               </span>
-
-              <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full border-4 border-[#334155] bg-radial from-[#1e293b] to-[#0b0f17] relative flex items-center justify-center shadow-inner">
-                {/* Redline zone */}
-                <div className="absolute top-2.5 right-4 sm:right-6 text-[8px] sm:text-[9px] font-mono-tech text-red-500 font-bold">
-                  REDLINE 7.2k
-                </div>
-
-                {/* Dial numbers with safe radius that never clips */}
-                {[0, 1, 2, 3, 4, 5, 6, 7].map((num) => {
-                  const angle = -140 + num * 40;
-                  const rad = (angle * Math.PI) / 180;
-                  const x = Math.sin(rad) * 56;
-                  const y = -Math.cos(rad) * 56;
-                  return (
-                    <span
-                      key={num}
-                      className={`absolute text-[11px] sm:text-xs font-mono-tech font-bold ${
-                        num >= 6 ? 'text-red-400' : 'text-gray-400'
-                      }`}
-                      style={{ transform: `translate(${x}px, ${y}px)` }}
-                    >
-                      {num}
-                    </span>
-                  );
-                })}
-
-                {/* Needle */}
-                <div
-                  className="w-1 h-16 sm:h-20 bg-red-500 rounded-full origin-bottom absolute bottom-20 sm:bottom-24 transition-transform duration-75 shadow-[0_0_8px_#ef4444]"
-                  style={{
-                    transform: `rotate(${-140 + (rpm / 7500) * 280}deg)`,
-                  }}
-                />
-
-                {/* Center hub */}
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 border-2 border-gray-600 z-10 flex items-center justify-center">
-                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_#ef4444]" />
-                </div>
-
-                {/* Digital readout */}
-                <div className="absolute bottom-3 sm:bottom-5 font-mono-tech text-base sm:text-lg font-bold text-white tracking-widest bg-black/60 px-2 py-0.5 rounded border border-gray-700">
-                  {Math.round(rpm)} <span className="text-[9px] sm:text-[10px] text-gray-400 font-sans">RPM</span>
-                </div>
-              </div>
+              <span className="text-[9px] font-mono-tech text-gray-500">
+                Escala: 0 - 7,200 RPM
+              </span>
             </div>
 
-            {/* Turbo Boost & Oil Pressure Gauges */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-4 w-full">
-              {/* Turbo Boost */}
-              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-2.5 sm:p-4 flex flex-col items-center">
-                <span className="text-[9px] sm:text-[10px] font-racing text-gray-400 uppercase tracking-wider mb-1.5">
-                  Presión Turbo
-                </span>
-                <div className="w-22 h-22 sm:w-28 sm:h-28 rounded-full border-2 border-gray-700 bg-gray-900 relative flex items-center justify-center">
-                  <div
-                    className="w-0.5 h-9 sm:h-12 bg-amber-400 origin-bottom absolute bottom-11 sm:bottom-14 transition-transform duration-100"
-                    style={{ transform: `rotate(${-120 + boostBar * 180}deg)` }}
+            {/* Tacómetro Compacto + Cuadrícula de 4 Relojes Auxiliares */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Tacómetro SVG Compacto y Proporcional (Nunca se corta) */}
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 shrink-0 flex items-center justify-center">
+                <svg viewBox="0 0 160 160" className="w-full h-full select-none">
+                  {/* Fondo del dial */}
+                  <circle cx="80" cy="80" r="74" fill="#0b0f17" stroke="#232f42" strokeWidth="3" />
+                  <circle cx="80" cy="80" r="68" fill="#070b12" stroke="#1f2937" strokeWidth="1" />
+
+                  {/* Zona Roja Redline (6.0k a 7.5k) */}
+                  <path
+                    d="M 124 124 A 62 62 0 0 0 136 62"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="5"
+                    strokeDasharray="4 2"
                   />
-                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-gray-800 border border-gray-600 z-10" />
-                  <span className="absolute bottom-1.5 sm:bottom-2 font-mono-tech text-[10px] sm:text-xs text-amber-400 font-bold">
-                    {boostBar > 0 ? `+${boostBar.toFixed(2)}` : '0.00'} Bar
-                  </span>
-                </div>
+
+                  {/* Números 0 al 7 */}
+                  {[0, 1, 2, 3, 4, 5, 6, 7].map((num) => {
+                    const angle = -140 + num * 40;
+                    const rad = (angle * Math.PI) / 180;
+                    const tx = 80 + Math.sin(rad) * 52;
+                    const ty = 80 - Math.cos(rad) * 52;
+                    return (
+                      <text
+                        key={num}
+                        x={tx}
+                        y={ty + 4}
+                        textAnchor="middle"
+                        fill={num >= 6 ? '#f87171' : '#9ca3af'}
+                        fontSize="11"
+                        fontWeight="bold"
+                        fontFamily="monospace"
+                      >
+                        {num}
+                      </text>
+                    );
+                  })}
+
+                  <text x="110" y="42" fill="#ef4444" fontSize="7" fontWeight="bold" fontFamily="monospace">
+                    7.2k
+                  </text>
+
+                  {/* Aguja del Tacómetro */}
+                  <line
+                    x1="80"
+                    y1="80"
+                    x2={80 + Math.sin(((-140 + Math.min(1, Math.max(0, rpm / 7500)) * 280) * Math.PI) / 180) * 54}
+                    y2={80 - Math.cos(((-140 + Math.min(1, Math.max(0, rpm / 7500)) * 280) * Math.PI) / 180) * 54}
+                    stroke="#ef4444"
+                    strokeWidth="2.8"
+                    strokeLinecap="round"
+                    className="transition-all duration-75 shadow-[0_0_8px_#ef4444]"
+                  />
+
+                  {/* Núcleo central */}
+                  <circle cx="80" cy="80" r="7" fill="#1f2937" stroke="#4b5563" strokeWidth="1.5" />
+                  <circle cx="80" cy="80" r="3" fill="#ef4444" />
+
+                  {/* Pantalla digital inferior de RPM */}
+                  <rect x="50" y="106" width="60" height="18" rx="4" fill="#000" stroke="#374151" strokeWidth="1" />
+                  <text x="80" y="119" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="bold" fontFamily="monospace">
+                    {Math.round(rpm)}
+                  </text>
+                </svg>
               </div>
 
-              {/* Oil Pressure */}
-              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-2.5 sm:p-4 flex flex-col items-center">
-                <span className="text-[9px] sm:text-[10px] font-racing text-gray-400 uppercase tracking-wider mb-1.5">
-                  Presión Aceite
-                </span>
-                <div className="w-22 h-22 sm:w-28 sm:h-28 rounded-full border-2 border-gray-700 bg-gray-900 relative flex items-center justify-center">
-                  <div
-                    className="w-0.5 h-9 sm:h-12 bg-emerald-400 origin-bottom absolute bottom-11 sm:bottom-14 transition-transform duration-100"
-                    style={{ transform: `rotate(${-120 + (oilPressurePsi / 80) * 240}deg)` }}
-                  />
-                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-gray-800 border border-gray-600 z-10" />
-                  <span className="absolute bottom-1.5 sm:bottom-2 font-mono-tech text-[10px] sm:text-xs text-emerald-400 font-bold">
+              {/* 4 Relojes Auxiliares en Mini-Tarjetas Compactas */}
+              <div className="grid grid-cols-2 gap-1.5 flex-1 min-w-0">
+                {/* Presión Turbo */}
+                <div className="bg-[#0b0f17] border border-gray-800 rounded-lg p-1.5 flex flex-col justify-between">
+                  <span className="text-[8px] sm:text-[9px] font-racing text-gray-400 uppercase">Turbo</span>
+                  <span className="text-[11px] sm:text-xs font-mono-tech font-bold text-amber-400">
+                    {boostBar > 0 ? `+${boostBar.toFixed(2)}` : '0.00'} b
+                  </span>
+                  <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden mt-0.5">
+                    <div
+                      className="h-full bg-amber-400 transition-all duration-100"
+                      style={{ width: `${Math.min(100, (boostBar / 1.3) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Presión Aceite */}
+                <div className="bg-[#0b0f17] border border-gray-800 rounded-lg p-1.5 flex flex-col justify-between">
+                  <span className="text-[8px] sm:text-[9px] font-racing text-gray-400 uppercase">Aceite</span>
+                  <span className="text-[11px] sm:text-xs font-mono-tech font-bold text-emerald-400">
                     {oilPressurePsi} PSI
                   </span>
+                  <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden mt-0.5">
+                    <div
+                      className="h-full bg-emerald-400 transition-all duration-100"
+                      style={{ width: `${Math.min(100, (oilPressurePsi / 80) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Temp Agua */}
+                <div className="bg-[#0b0f17] border border-gray-800 rounded-lg p-1.5 flex flex-col justify-between">
+                  <span className="text-[8px] sm:text-[9px] font-racing text-gray-400 uppercase">Temp Agua</span>
+                  <span className="text-[11px] sm:text-xs font-mono-tech font-bold text-cyan-400">
+                    {Math.round(coolantTempC)} °C
+                  </span>
+                  <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden mt-0.5">
+                    <div
+                      className="h-full bg-cyan-400 transition-all duration-100"
+                      style={{ width: `${Math.min(100, (coolantTempC / 100) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Batería 12V */}
+                <div className="bg-[#0b0f17] border border-gray-800 rounded-lg p-1.5 flex flex-col justify-between">
+                  <span className="text-[8px] sm:text-[9px] font-racing text-gray-400 uppercase">Batería</span>
+                  <span className="text-[11px] sm:text-xs font-mono-tech font-bold text-amber-300">
+                    {engineState === 'running' ? '14.2V' : keyState !== 'off' ? '12.4V' : '0.0V'}
+                  </span>
+                  <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden mt-0.5">
+                    <div
+                      className="h-full bg-amber-400"
+                      style={{ width: `${keyState !== 'off' ? 85 : 0}%` }}
+                    />
+                  </div>
                 </div>
               </div>
+            </div>
 
-              {/* Coolant Temp */}
-              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-3 flex flex-col items-center">
-                <span className="text-[9px] font-racing text-gray-400 uppercase">Temp Agua</span>
-                <span className="text-sm font-mono-tech font-bold text-cyan-400 mt-1">
-                  {Math.round(coolantTempC)} °C
-                </span>
+            {/* Testigos Luminosos (Check, Aceite, Batería, Shift) en 1 línea compacta */}
+            <div className="pt-1.5 border-t border-gray-800/80 flex items-center justify-around text-[8px] font-mono-tech text-gray-400">
+              <div className="flex items-center gap-1">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    keyState === 'on' && engineState !== 'running'
+                      ? 'bg-amber-500 shadow-[0_0_6px_#f59e0b]'
+                      : engineState === 'failed'
+                      ? 'bg-red-500 animate-pulse shadow-[0_0_8px_#ef4444]'
+                      : 'bg-gray-800'
+                  }`}
+                />
+                <span>CHECK</span>
               </div>
-
-              {/* Alternator Battery */}
-              <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-3 flex flex-col items-center">
-                <span className="text-[9px] font-racing text-gray-400 uppercase">Batería 12V</span>
-                <span className="text-sm font-mono-tech font-bold text-amber-400 mt-1">
-                  {engineState === 'running' ? '14.2 V' : keyState !== 'off' ? '12.4 V' : '0.0 V'}
-                </span>
+              <div className="flex items-center gap-1">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    keyState !== 'off' && oilPressurePsi < 20
+                      ? 'bg-red-500 shadow-[0_0_6px_#ef4444]'
+                      : 'bg-gray-800'
+                  }`}
+                />
+                <span>ACEITE</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    keyState !== 'off' && engineState !== 'running'
+                      ? 'bg-red-500 shadow-[0_0_6px_#ef4444]'
+                      : 'bg-gray-800'
+                  }`}
+                />
+                <span>BATERÍA</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    rpm > 6500 ? 'bg-blue-400 animate-ping shadow-[0_0_10px_#38bdf8]' : 'bg-gray-800'
+                  }`}
+                />
+                <span>SHIFT</span>
               </div>
             </div>
           </div>
 
-          {/* Warning Lights Strip */}
-          <div className="mt-6 pt-4 border-t border-gray-800/80 flex items-center justify-around">
-            {/* Check Engine MIL */}
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className={`w-3.5 h-3.5 rounded-full ${
-                  keyState === 'on' && engineState !== 'running'
-                    ? 'bg-amber-500 shadow-[0_0_8px_#f59e0b]'
-                    : engineState === 'failed'
-                    ? 'bg-red-500 animate-pulse shadow-[0_0_10px_#ef4444]'
-                    : 'bg-gray-800'
-                }`}
-              />
-              <span className="text-[9px] font-mono-tech text-gray-400">CHECK</span>
-            </div>
+          {/* SECCIÓN 2 (Lado Derecho / Abajo en Celular): Llave de Encendido + BOTÓN ARRANCAR + CURSOR ACELERADOR */}
+          <div className="lg:col-span-5 bg-[#0b0f17] border border-gray-800/90 rounded-xl p-2.5 sm:p-3 space-y-2 flex flex-col justify-between">
+            {/* Selector de Llave (OFF, ACC, ON, START) */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-[10px] font-racing text-gray-300">
+                <span className="flex items-center gap-1">
+                  <Key className="w-3 h-3 text-amber-400" />
+                  Interruptor de Encendido
+                </span>
+                <span className="text-amber-400 font-mono-tech font-bold uppercase text-[9px]">
+                  Posición: {keyState}
+                </span>
+              </div>
 
-            {/* Oil Warning */}
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className={`w-3.5 h-3.5 rounded-full ${
-                  keyState !== 'off' && oilPressurePsi < 20
-                    ? 'bg-red-500 shadow-[0_0_8px_#ef4444]'
-                    : 'bg-gray-800'
-                }`}
-              />
-              <span className="text-[9px] font-mono-tech text-gray-400">ACEITE</span>
-            </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['off', 'acc', 'on'] as const).map((pos) => (
+                  <button
+                    key={pos}
+                    onClick={() => handleTurnKey(pos)}
+                    className={`py-1 px-1 text-[10px] font-mono-tech font-bold rounded-lg border uppercase transition-all cursor-pointer ${
+                      keyState === pos
+                        ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-xs'
+                        : 'bg-gray-800/60 border-gray-700 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {pos}
+                  </button>
+                ))}
 
-            {/* Battery Warning */}
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className={`w-3.5 h-3.5 rounded-full ${
-                  keyState !== 'off' && engineState !== 'running'
-                    ? 'bg-red-500 shadow-[0_0_8px_#ef4444]'
-                    : 'bg-gray-800'
-                }`}
-              />
-              <span className="text-[9px] font-mono-tech text-gray-400">BATERÍA</span>
-            </div>
-
-            {/* Shift Light (Redline) */}
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className={`w-3.5 h-3.5 rounded-full ${
-                  rpm > 6500 ? 'bg-blue-400 animate-ping shadow-[0_0_12px_#38bdf8]' : 'bg-gray-800'
-                }`}
-              />
-              <span className="text-[9px] font-mono-tech text-gray-400">SHIFT</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Ignition Controls & Throttle Pedal Panel */}
-        <div className="bg-[#111722] border border-[#232f42] rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-6">
-          <div>
-            <h3 className="font-racing font-bold text-sm text-gray-200 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Key className="w-4 h-4 text-amber-400" />
-              Interruptor de Encendido
-            </h3>
-
-            {/* Key Selector Buttons */}
-            <div className="grid grid-cols-4 gap-2 mb-4">
-              {(['off', 'acc', 'on'] as const).map((pos) => (
+                {/* Botón START tipo resorte */}
                 <button
-                  key={pos}
-                  onClick={() => handleTurnKey(pos)}
-                  className={`py-2 px-1 text-xs font-mono-tech font-bold rounded-lg border uppercase transition-all cursor-pointer ${
-                    keyState === pos
-                      ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-sm'
-                      : 'bg-gray-800/60 border-gray-700 text-gray-400 hover:text-white'
+                  onMouseDown={handleStartMouseDown}
+                  onMouseUp={handleStartMouseUp}
+                  onTouchStart={handleStartMouseDown}
+                  onTouchEnd={handleStartMouseUp}
+                  className={`py-1 px-1 text-[10px] font-mono-tech font-bold rounded-lg border uppercase transition-all select-none cursor-pointer ${
+                    keyState === 'start'
+                      ? 'bg-red-600 border-red-400 text-white shadow-[0_0_10px_#ef4444]'
+                      : 'bg-red-950/40 border-red-700/60 text-red-300 hover:bg-red-900/60'
                   }`}
                 >
-                  {pos}
+                  START
                 </button>
-              ))}
-
-              {/* Start Spring-loaded button */}
-              <button
-                onMouseDown={handleStartMouseDown}
-                onMouseUp={handleStartMouseUp}
-                onTouchStart={handleStartMouseDown}
-                onTouchEnd={handleStartMouseUp}
-                className={`py-2 px-1 text-xs font-mono-tech font-bold rounded-lg border uppercase transition-all select-none cursor-pointer ${
-                  keyState === 'start'
-                    ? 'bg-red-600 border-red-400 text-white shadow-[0_0_12px_#ef4444]'
-                    : 'bg-red-950/40 border-red-700/60 text-red-300 hover:bg-red-900/60'
-                }`}
-              >
-                START
-              </button>
+              </div>
             </div>
 
-            {/* Big Starter Push Button */}
+            {/* BOTÓN MANTENER PULSADO PARA ARRANCAR (Ahora 100% visible dentro del marco del celular) */}
             <button
               onMouseDown={handleStartMouseDown}
               onMouseUp={handleStartMouseUp}
               onTouchStart={handleStartMouseDown}
               onTouchEnd={handleStartMouseUp}
               disabled={engineState === 'running'}
-              className={`w-full py-5 rounded-2xl font-racing font-bold text-base uppercase tracking-wider flex items-center justify-center gap-3 transition-all cursor-pointer select-none shadow-2xl ${
+              className={`w-full py-2.5 sm:py-3 px-3 rounded-xl font-racing font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer select-none shadow-lg active:scale-98 ${
                 engineState === 'running'
-                  ? 'bg-emerald-950/40 border border-emerald-500/40 text-emerald-400 opacity-80 cursor-default'
+                  ? 'bg-emerald-950/40 border border-emerald-500/40 text-emerald-400 opacity-90 cursor-default'
                   : keyState === 'start'
-                  ? 'bg-red-500 text-white scale-98 shadow-[0_0_20px_#ef4444]'
-                  : 'bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white shadow-lg active:scale-98'
+                  ? 'bg-red-500 text-white scale-98 shadow-[0_0_18px_#ef4444]'
+                  : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-600 text-white shadow-md'
               }`}
             >
-              <Flame className="w-5 h-5 animate-pulse" />
-              {engineState === 'running'
-                ? '¡Motor en Marcha!'
-                : keyState === 'start'
-                ? 'Dando Arranque...'
-                : 'Mantener Pulsado para Arrancar'}
-            </button>
-          </div>
-
-          {/* Throttle Pedal Section */}
-          <div className="bg-[#0b0f17] border border-gray-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-xs font-racing">
-              <span className="text-gray-300">Pedal de Acelerador (Mariposa)</span>
-              <span className="text-amber-400 font-mono-tech font-bold">
-                {Math.round(throttle * 100)}%
+              <Flame className="w-4 h-4 animate-pulse shrink-0" />
+              <span className="truncate">
+                {engineState === 'running'
+                  ? '¡Motor en Marcha!'
+                  : keyState === 'start'
+                  ? 'Dando Arranque...'
+                  : 'Mantener Pulsado para Arrancar'}
               </span>
-            </div>
+            </button>
 
-            {/* Slider or Click to accelerate */}
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.02}
-              value={throttle}
-              disabled={engineState !== 'running'}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                throttleRef.current = val;
-                setThrottle(val);
-              }}
-              onInput={(e) => {
-                const val = Number((e.target as HTMLInputElement).value);
-                throttleRef.current = val;
-                setThrottle(val);
-              }}
-              onMouseUp={() => {
-                throttleRef.current = 0;
-                setThrottle(0);
-                if (engineState === 'running') soundEngine.playBlowOff();
-              }}
-              onTouchEnd={() => {
-                throttleRef.current = 0;
-                setThrottle(0);
-                if (engineState === 'running') soundEngine.playBlowOff();
-              }}
-              className="w-full accent-red-500 h-3 bg-gray-800 rounded-lg cursor-pointer disabled:opacity-40"
-            />
+            {/* CURSOR DE ACELERADOR (DESLIZADOR) - 100% visible dentro del marco del celular */}
+            <div className="bg-[#070b12] border border-gray-800 rounded-lg p-2 space-y-1">
+              <div className="flex items-center justify-between text-[10px] font-racing">
+                <span className="text-gray-300 flex items-center gap-1">
+                  <Zap className="w-3 h-3 text-amber-400" />
+                  Cursor de Acelerador (Mariposa)
+                </span>
+                <span className="text-amber-400 font-mono-tech font-bold">
+                  {Math.round(throttle * 100)}%
+                </span>
+              </div>
 
-            <div className="flex items-center justify-between text-[11px] text-gray-500">
-              <span>Ralentí (950 RPM)</span>
-              <span className="text-gray-400">Tip: Mantén pulsado [ESPACIO] para acelerar</span>
-              <span>7,200 RPM</span>
+              {/* Slider táctil continuo */}
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.02}
+                value={throttle}
+                disabled={engineState !== 'running'}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  throttleRef.current = val;
+                  setThrottle(val);
+                }}
+                onInput={(e) => {
+                  const val = Number((e.target as HTMLInputElement).value);
+                  throttleRef.current = val;
+                  setThrottle(val);
+                }}
+                onMouseUp={() => {
+                  throttleRef.current = 0;
+                  setThrottle(0);
+                  if (engineState === 'running') soundEngine.playBlowOff();
+                }}
+                onTouchEnd={() => {
+                  throttleRef.current = 0;
+                  setThrottle(0);
+                  if (engineState === 'running') soundEngine.playBlowOff();
+                }}
+                className="w-full accent-red-500 h-2 bg-gray-800 rounded-lg cursor-pointer disabled:opacity-40"
+              />
+
+              <div className="flex items-center justify-between text-[8px] font-mono-tech text-gray-500">
+                <span>0% Ralentí (950)</span>
+                <span>50% (3,800)</span>
+                <span className="text-red-400 font-bold">100% (7,200 RPM)</span>
+              </div>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AssemblyDifficulty } from '../types/engine';
 import { soundEngine } from '../services/soundEngine';
+import { PWAInstallButton } from './PWAInstallButton';
 import {
   Wrench,
   User,
@@ -182,10 +183,10 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
               {!imageError ? (
                 <img
-                  src="/assets/aistudio/Engine-Puzzle-Car_183fdf67.jpg"
+                  src="/assets/aistudio/logo-Engine-car_cd954c6d.png"
                   alt="Engine Puzzle Car Logo"
                   onError={() => setImageError(true)}
-                  className="h-16 sm:h-20 md:h-24 w-auto rounded-2xl shadow-2xl border-2 border-amber-500/50 bg-black/40 p-1 object-contain hover:scale-105 transition-transform shrink-0"
+                  className="h-20 sm:h-28 md:h-36 w-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform shrink-0"
                 />
               ) : (
                 <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-black font-black shadow-lg shrink-0">
@@ -322,6 +323,11 @@ export const InitialAccessModal: React.FC<InitialAccessModalProps> = ({
                 );
               })}
             </div>
+          </div>
+
+          {/* Offline PWA Install Prompt */}
+          <div className="pt-2">
+            <PWAInstallButton variant="card" />
           </div>
 
           {/* Action Footer */}

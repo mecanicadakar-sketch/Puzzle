@@ -75,9 +75,9 @@ export const ScorecardModal: React.FC<ScorecardModalProps> = ({
           <div className="relative z-10 flex flex-col items-center">
             {/* Engine Puzzle Car Official Logo Asset */}
             <img
-              src="/assets/aistudio/Engine-Puzzle-Car_183fdf67.jpg"
+              src="/assets/aistudio/logo-Engine-car_cd954c6d.png"
               alt="Engine Puzzle Car: The Ultimate Assembly Challenge"
-              className="h-16 sm:h-24 w-auto object-contain rounded-2xl shadow-2xl border-2 border-white/40 mb-2 p-1 bg-black/40 hover:scale-105 transition-transform"
+              className="h-24 sm:h-36 md:h-44 w-auto object-contain drop-shadow-2xl mb-2 hover:scale-105 transition-transform"
             />
             <h2 className="font-racing font-extrabold text-lg sm:text-xl text-white tracking-wider uppercase drop-shadow-md">
               ¡Motor Armado y Puesto en Marcha!
